@@ -45,7 +45,7 @@ No API key or private backend is needed.
 
 ## Model
 
-- Model: `onnx-community/SmolLM2-135M-Instruct`
+- Model: `HuggingFaceTB/SmolLM2-135M-Instruct`
 - Library: Transformers.js `3.8.1`
 - Approximate first-load model download: roughly `80-120 MB`, depending on CDN/model shard packaging and browser cache behavior
 - License: Apache-2.0 upstream model family
