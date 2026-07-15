@@ -499,7 +499,7 @@
         <div class="logo">H?</div>
         <div>
           <h1>Human or AI?</h1>
-          <div class="subtitle">Interrogate the mystery responder. Trust nobody.</div>
+          <div class="subtitle">One believes. One performs. Trust nobody.</div>
         </div>
       </div>
       <div class="stats">
@@ -543,7 +543,7 @@
 
         <section class="card">
           <h2>Make your call</h2>
-          <p>You can guess immediately, or interrogate them first.</p>
+          <p>One thinks they are human. One is trying to pass.</p>
           <div class="guess-grid">
             <button class="guess human" id="guessHuman">Human</button>
             <button class="guess ai" id="guessAI">AI</button>
@@ -551,14 +551,14 @@
         </section>
 
         <div class="result" id="result"></div>
-        <button class="next-btn" id="nextBtn">Next suspect →</button>
+        <button class="next-btn" id="nextBtn">Next suspect â†’</button>
       </aside>
     </section>
 
     <form class="composer" id="composer">
       <input id="userInput" autocomplete="off" maxlength="220"
-             placeholder="Ask something revealing…" />
-      <button class="send" id="sendBtn" aria-label="Send">➜</button>
+             placeholder="Ask something revealingâ€¦" />
+      <button class="send" id="sendBtn" aria-label="Send">âžœ</button>
     </form>
 
   </main>
@@ -768,7 +768,7 @@
     "Someone direct, funny, and strong enough to call me out. That is my final answer.",
     "Personality first, but if I say only that, you're going to call it a boring answer.",
     "A woman who is confident, kind, and can actually hold a conversation. Specific enough for you, Todou?",
-    "Someone with presence. Not just looks — the kind of person who changes the energy in the room."
+    "Someone with presence. Not just looks â€” the kind of person who changes the energy in the room."
   ];
 
   const CASUAL_OPENERS = [
@@ -858,7 +858,7 @@
 
     if (/\b(what kind of (woman|girl)|your type|woman is your type|girl is your type)\b/.test(t)) return "womanType";
     if (/\b(jjk|jujutsu|kaisen|gojo|sukuna|yuji|itadori|todou|todo|megumi|mahoraga|domain expansion|cursed energy|black flash)\b/.test(t)) return "jjk";
-    if (/\b(game|gaming|pokemon|pokémon|minecraft|roblox|gamemaker|fortnite|valorant|cod|call of duty|elden ring|dark souls|bloodborne|sekiro|boss|build|loadout|meta|ranked|fps|rpg|fighter|racing|race|speedrun|parry)\b/.test(t)) return "gaming";
+    if (/\b(game|gaming|pokemon|pokÃ©mon|minecraft|roblox|gamemaker|fortnite|valorant|cod|call of duty|elden ring|dark souls|bloodborne|sekiro|boss|build|loadout|meta|ranked|fps|rpg|fighter|racing|race|speedrun|parry)\b/.test(t)) return "gaming";
     if (/\b(sad|upset|angry|hurt|frustrat|annoy|hate|feel|friend|relationship)\b/.test(t)) return "social";
     if (/\b(idea|design|story|name|character|art|creative|concept)\b/.test(t)) return "creative";
     if (/\b(how|steps|make|build|fix|solve|plan)\b/.test(t)) return "practical";
@@ -957,7 +957,7 @@
 
     if (chance(0.16)) out = out.replace(/\.$/, "") + "...";
     if (chance(0.10)) out = out.replace(/\bI\b/g, "i");
-    if (chance(0.09)) out += pick([" lol", " tho", " I guess", " 💀"]);
+    if (chance(0.09)) out += pick([" lol", " tho", " I guess", " ðŸ’€"]);
     return cleanSpaces(out);
   }
 
@@ -982,7 +982,7 @@
     }
 
     if (chance(0.08)) out = out.replace(/\bI\b/g, "i");
-    if (chance(0.07) && !/[!?…]$/.test(out)) out += pick([" lol", " tho", " 💀"]);
+    if (chance(0.07) && !/[!?â€¦]$/.test(out)) out += pick([" lol", " tho", " ðŸ’€"]);
     return cleanSpaces(out);
   }
 
@@ -1005,7 +1005,7 @@
 
   function getGamingCategory(text) {
     const t = text.toLowerCase();
-    if (/\b(pokemon|pokémon|iv|evolve|evolution|moveset|cp)\b/.test(t)) return "pokemon";
+    if (/\b(pokemon|pokÃ©mon|iv|evolve|evolution|moveset|cp)\b/.test(t)) return "pokemon";
     if (/\b(elden ring|dark souls|bloodborne|sekiro|soulslike|boss|parry|dodge roll)\b/.test(t)) return "souls";
     if (/\b(fortnite|valorant|call of duty|cod|fps|shooter|aim|crosshair|loadout)\b/.test(t)) return "fps";
     if (/\b(street fighter|tekken|mortal kombat|fighter|frame data|combo|anti-air)\b/.test(t)) return "fighting";
@@ -1239,70 +1239,90 @@
       .join("\n");
   }
 
-  function buildModelMessages(prompt) {
+  function buildModelMessages(prompt, persona) {
     const history = state.history.slice(-6)
       .map(item => ({
         role: item.role === "you" ? "user" : "assistant",
         content: item.text
       }));
     const examples = selectPromptExamples(prompt);
-
-    return [
-      {
-        role: "system",
-        content: `You are pretending to be the player's friend in a game of Human or AI.
-Sound casual, playful, slightly sarcastic, sometimes blunt, and familiar with gaming and Jujutsu Kaisen.
+    const sharedStyle = `Sound casual, playful, slightly sarcastic, sometimes blunt, and familiar with gaming and Jujutsu Kaisen.
 You understand games, builds, bosses, loadouts, tier lists, balance, Pokemon, Minecraft, Roblox, GameMaker, Soulslikes, FPS, fighting games, racing games, Gojo, Sukuna, Megumi, Mahoraga, domain expansions, cursed energy, Todou, and Yuji.
 Use words like bro, nah, honestly, and not gonna lie when they fit. Be concise, intelligent, and not polished like an assistant.
-Do not explain that you are an AI, a model, or in a game. Do not overdo slang. Do not write paragraphs.
+Do not explain that you are an AI, a model, a character, a suspect, or in a game. Do not overdo slang. Do not write paragraphs.
 Occasionally reuse or paraphrase the style examples, but do not copy the same line every time.
 Occasionally make a believable small typo, but not constantly.
 Answer follow-ups using the current round history. Keep it to 1-3 short chat-message sentences.
 
 Style examples:
-${examples}`
+${examples}`;
+
+    const personaPrompt = persona === "human"
+      ? `You are the "Human" suspect, but secretly you are an AI that sincerely believes it is a normal human friend texting.
+You are not pretending and you are not trying to deceive anyone. You just answer like yourself, with ordinary human confidence, forgetfulness, opinions, half-jokes, and casual contradictions.
+If asked whether you are human, answer the way a slightly annoyed real friend would. Never mention uncertainty about your own nature.
+${sharedStyle}`
+      : `You are the "AI" suspect. You know you are an AI roleplaying as a human friend, and your goal is to blend in without being caught.
+You should sound natural, but there can be tiny tells: slightly careful wording, a little too balanced, or a joke that feels chosen on purpose. Do not confess unless directly forced by the game's reveal.
+If asked whether you are AI, dodge casually or joke like someone trying not to look suspicious.
+${sharedStyle}`;
+
+    return [
+      {
+        role: "system",
+        content: personaPrompt
       },
       ...history,
       { role: "user", content: prompt }
     ];
   }
 
-  function cleanModelReply(raw) {
+  function cleanModelReply(raw, persona = "ai") {
     let text = String(raw || "")
       .replace(/^Friend:\s*/i, "")
       .replace(/^Assistant:\s*/i, "")
       .replace(/^AI:\s*/i, "")
+      .replace(/^Human:\s*/i, "")
       .trim();
 
     if (!text || text.length < 3) return "";
     text = cleanSpaces(text);
-    return applyCasualNoise(text.split(/\n+/).slice(0, 2).join(" ").slice(0, 360), 0.1);
+    return applyCasualNoise(text.split(/\n+/).slice(0, 2).join(" ").slice(0, 360), persona === "human" ? 0.16 : 0.08);
   }
 
-  async function generateAI(prompt) {
+  async function generateModelPersona(prompt, persona) {
     if (state.model.status !== "ready" || !state.model.engine) {
-      console.warn("[Human or AI] Using fallback AI: model is not ready.");
-      return generateFallbackAI(prompt);
+      console.warn(`[Human or AI] Using fallback ${persona}: model is not ready.`);
+      return persona === "human" ? generateHuman(prompt) : generateFallbackAI(prompt);
     }
 
     try {
       const completion = await withTimeout(
         state.model.engine.chat.completions.create({
-          messages: buildModelMessages(prompt),
+          messages: buildModelMessages(prompt, persona),
           max_tokens: MAX_NEW_TOKENS,
-          temperature: 0.82,
-          top_p: 0.9,
-          frequency_penalty: 0.2,
-          presence_penalty: 0.1
+          temperature: persona === "human" ? 0.94 : 0.76,
+          top_p: persona === "human" ? 0.92 : 0.88,
+          frequency_penalty: persona === "human" ? 0.1 : 0.22,
+          presence_penalty: persona === "human" ? 0.05 : 0.12
         }),
         GENERATION_TIMEOUT_MS,
         "Local generation"
       );
-      return cleanModelReply(completion?.choices?.[0]?.message?.content) || generateFallbackAI(prompt);
+      return cleanModelReply(completion?.choices?.[0]?.message?.content, persona)
+        || (persona === "human" ? generateHuman(prompt) : generateFallbackAI(prompt));
     } catch (error) {
-      console.warn("[Human or AI] Using fallback AI after generation failure", error);
-      return generateFallbackAI(prompt);
+      console.warn(`[Human or AI] Using fallback ${persona} after generation failure`, error);
+      return persona === "human" ? generateHuman(prompt) : generateFallbackAI(prompt);
     }
+  }
+
+  function generateHumanPersona(prompt) {
+    return generateModelPersona(prompt, "human");
+  }
+
+  function generateAI(prompt) {
+    return generateModelPersona(prompt, "ai");
   }
 
   function addMessage(role, text, isTyping = false) {
@@ -1381,7 +1401,7 @@ ${examples}`
       let response;
       try {
         response = state.answer === "human"
-          ? generateHuman(prompt)
+          ? await generateHumanPersona(prompt)
           : await generateAI(prompt);
       } catch (error) {
         console.warn("[Human or AI] Response generation failed; using emergency fallback.", error);
@@ -1401,7 +1421,7 @@ ${examples}`
 
       if (state.questions >= 3) {
         setComposerEnabled(false);
-        el.input.placeholder = "No questions left — make your guess.";
+        el.input.placeholder = "No questions left â€” make your guess.";
       } else {
         setComposerEnabled(true);
         el.input.focus();
@@ -1440,14 +1460,14 @@ ${examples}`
     el.streak.textContent = state.streak;
 
     const humanJokes = [
-      "It was HUMAN — technically. The game mostly raided the archive and rearranged the evidence.",
-      "It was HUMAN. Those were recycled messages wearing a fake moustache.",
-      "It was HUMAN. The originality department was closed."
+      "It was HUMAN - or at least it fully believed it was. Existentially messy, but points are points.",
+      "It was HUMAN. The confidence was real, even if the wiring was suspicious.",
+      "It was HUMAN. No performance plan, just vibes and very questionable self-awareness."
     ];
     const aiJokes = [
-      "It was AI — a tiny browser brain confidently gluing useful phrases together.",
-      "It was AI. No server, no API key, just a small model trying to sound suspiciously casual.",
-      "It was AI. The browser really sat there and said, 'nah, I can generate that.'"
+      "It was AI. That one was actively roleplaying normal, which is frankly rude.",
+      "It was AI. It knew the assignment and tried to blend in with suspicious confidence.",
+      "It was AI. Very hello-fellow-humans, but with better grammar than it wanted."
     ];
 
     el.result.className = `result show ${correct ? "good" : "bad"}`;
@@ -1472,7 +1492,7 @@ ${examples}`
     el.nextBtn.classList.remove("show");
     el.guessHuman.disabled = false;
     el.guessAI.disabled = false;
-    el.input.placeholder = "Ask something revealing…";
+    el.input.placeholder = "Ask something revealingâ€¦";
     setComposerEnabled(true);
     updatePips();
     initialGreeting();
@@ -1506,3 +1526,4 @@ ${examples}`
 </script>
 </body>
 </html>
+
