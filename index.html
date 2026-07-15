@@ -536,7 +536,7 @@
           <p id="modelStatus">Checking local browser model support...</p>
           <div class="init-status">
             <div class="meter" aria-hidden="true"><span id="modelProgress"></span></div>
-            <button class="retry-btn" id="retryModel" type="button">Retry initialization</button>
+            <button class="retry-btn" id="retryModel" type="button">Retry local model</button>
           </div>
           <div class="tiny">Runs locally in your browser. Repeat visits can use the browser cache.</div>
         </section>
@@ -567,10 +567,10 @@
 (() => {
   "use strict";
 
-  const MODEL_ID = "onnx-community/SmolLM2-135M-Instruct";
+  const MODEL_ID = "HuggingFaceTB/SmolLM2-135M-Instruct";
   const TRANSFORMERS_CDN = "https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.8.1";
-  const MODEL_TIMEOUT_MS = 12000;
-  const GENERATION_TIMEOUT_MS = 14000;
+  const MODEL_TIMEOUT_MS = 60000;
+  const GENERATION_TIMEOUT_MS = 20000;
   const MAX_NEW_TOKENS = 72;
   let transformersPipeline = null;
 
@@ -1163,7 +1163,7 @@
     if (progress !== null) {
       el.modelProgress.style.width = `${Math.max(4, Math.min(100, progress))}%`;
     }
-    el.retryModel.classList.toggle("show", status === "failed");
+    el.retryModel.classList.toggle("show", status === "failed" || status === "fallback");
   }
 
   function withTimeout(promise, ms, label) {
@@ -1188,8 +1188,8 @@
     } catch (error) {
       console.warn("[Human or AI] Transformers.js could not load", error);
       state.model.error = error.message || String(error);
-      state.model.status = "failed";
-      setModelStatus("failed", "Local model library could not load. The game can still use its emergency offline-style fallback.", 100);
+      state.model.status = "fallback";
+      setModelStatus("fallback", "Ready using the built-in fallback. You can retry the local model if you want.", 100);
       return;
     }
 
@@ -1227,8 +1227,8 @@
       }
     }
 
-    state.model.status = "failed";
-    setModelStatus("failed", "Local model could not load. The game can still use its emergency offline-style fallback.", 100);
+    state.model.status = "fallback";
+    setModelStatus("fallback", "Ready using the built-in fallback. You can retry the local model if you want.", 100);
   }
 
   function chooseAnswer() {
