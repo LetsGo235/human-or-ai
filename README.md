@@ -34,7 +34,7 @@ The game is a static single-page app, so GitHub Pages can host it without a back
 
 The "Human" suspect is now an AI that sincerely believes it is a normal human friend texting. The "AI" suspect knows it is roleplaying as human and is actively trying to blend in.
 
-The local AI engine still runs in each visitor's browser. On first load, the page imports WebLLM and downloads the Llama 3.2 1B q4f16 browser model. After that, the browser cache can make repeat visits faster.
+The local AI engine still runs in each visitor's browser. On first load, the page imports WebLLM and downloads the Llama 3.2 3B q4f16 browser model. After that, the browser cache can make repeat visits faster.
 
 No API key or private backend is needed.
 
@@ -44,10 +44,11 @@ No API key or private backend is needed.
 - WebGPU is required for the smarter local model.
 - If the model cannot load, the game silently falls back to its built-in phrase generator so rounds do not crash.
 - First load can take a while because larger model files are downloaded by the visitor's browser.
+- The UI is styled like a bright 2005-2010 web game: glossy gradients, chunky borders, and saturated button colors.
 
 ## Model
 
-- Model: `Llama-3.2-1B-Instruct-q4f16_1-MLC`
+- Model: `Llama-3.2-3B-Instruct-q4f16_1-MLC`
 - Library: WebLLM
-- Approximate first-load model download: several hundred MB, depending on CDN/model shard packaging and browser cache behavior
+- Approximate first-load model download: roughly 1-2 GB, depending on CDN/model shard packaging and browser cache behavior
 - Runtime requirement: WebGPU
