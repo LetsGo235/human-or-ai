@@ -490,6 +490,266 @@
       .bubble { max-width: 86%; }
       .subtitle { max-width: 190px; }
     }
+
+    /* Bright 2005-2010 web skin: glossy panels, tiled backgrounds, chunky borders. */
+    :root {
+      --bg: #72d7ff;
+      --panel: #ffffff;
+      --panel-2: #f8fbff;
+      --line: #1d6ebd;
+      --text: #10294d;
+      --muted: #526985;
+      --accent: #ff7a00;
+      --accent-2: #00a8e8;
+      --danger: #e51b5f;
+      --good: #19a848;
+      --shadow: 0 13px 0 rgba(16, 83, 154, 0.25), 0 24px 50px rgba(0, 75, 130, 0.22);
+    }
+
+    html, body {
+      background-color: #72d7ff;
+      background-image:
+        linear-gradient(45deg, rgba(255,255,255,.28) 25%, transparent 25%),
+        linear-gradient(-45deg, rgba(255,255,255,.28) 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, rgba(255,255,255,.28) 75%),
+        linear-gradient(-45deg, transparent 75%, rgba(255,255,255,.28) 75%),
+        linear-gradient(180deg, #c9f4ff 0%, #6fd8ff 48%, #3c9ee5 100%);
+      background-position: 0 0, 0 10px, 10px -10px, -10px 0, 0 0;
+      background-size: 20px 20px, 20px 20px, 20px 20px, 20px 20px, auto;
+      color: var(--text);
+      font-family: Tahoma, Verdana, Arial, sans-serif;
+    }
+
+    body { padding: 18px; }
+
+    .game {
+      width: min(1020px, 100%);
+      background: #fff;
+      border: 4px solid #ffffff;
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      outline: 2px solid #1d6ebd;
+    }
+
+    .topbar {
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.72), rgba(255,255,255,0) 48%),
+        linear-gradient(180deg, #ffb341 0%, #ff7900 48%, #e25200 100%);
+      border-bottom: 3px solid #9f3100;
+      color: #fff;
+      text-shadow: 0 1px 1px rgba(0,0,0,.42);
+      backdrop-filter: none;
+    }
+
+    .logo {
+      width: 48px;
+      height: 48px;
+      border-radius: 8px;
+      color: #063263;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.8), rgba(255,255,255,0) 42%),
+        linear-gradient(135deg, #fff55a, #12d3ff 55%, #006edc);
+      border: 2px solid #fff;
+      box-shadow: inset 0 -3px 0 rgba(0,0,0,.18), 0 3px 0 rgba(100,35,0,.38);
+      letter-spacing: 0;
+    }
+
+    h1 {
+      font-family: "Trebuchet MS", Tahoma, sans-serif;
+      font-size: 1.42rem;
+      letter-spacing: 0;
+    }
+
+    .subtitle { color: #fff8bf; }
+
+    .stat {
+      color: #063263;
+      background:
+        linear-gradient(180deg, #ffffff, #d9f5ff);
+      border: 2px solid #ffffff;
+      border-radius: 8px;
+      box-shadow: inset 0 -2px 0 rgba(0,112,180,.18), 0 2px 0 rgba(87,42,0,.28);
+      text-shadow: none;
+    }
+
+    .stat strong { color: #e24700; }
+
+    .main {
+      background: linear-gradient(90deg, #f7fdff, #dff7ff);
+    }
+
+    .chat-wrap {
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.8), rgba(255,255,255,0)),
+        #f7fcff;
+      border-right: 3px solid #5db5f2;
+    }
+
+    .round-head {
+      background: linear-gradient(180deg, #ffffff, #cff1ff);
+      border-bottom: 2px solid #75bfe9;
+    }
+
+    .round-title {
+      color: #023b7d;
+      font-family: "Trebuchet MS", Tahoma, sans-serif;
+      font-size: 1.05rem;
+      letter-spacing: 0;
+    }
+
+    .round-help { color: #39627e; }
+
+    .messages {
+      background:
+        repeating-linear-gradient(0deg, rgba(0,154,220,.05) 0 1px, transparent 1px 28px),
+        linear-gradient(180deg, #ffffff, #e8f9ff);
+    }
+
+    .avatar {
+      border-radius: 7px;
+      color: #fff;
+      background:
+        linear-gradient(180deg, #5dd7ff, #0075d8);
+      border: 2px solid #fff;
+      box-shadow: 0 2px 0 rgba(5,72,130,.35);
+    }
+
+    .you .avatar {
+      color: #fff;
+      background: linear-gradient(180deg, #ffca54, #f06b00);
+    }
+
+    .bubble {
+      color: #132b48;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.95), rgba(255,255,255,.62) 44%, rgba(219,243,255,.95)),
+        #e8f8ff;
+      border: 2px solid #79b8e6;
+      border-radius: 6px;
+      box-shadow: 0 3px 0 rgba(0,93,158,.16);
+    }
+
+    .you .bubble {
+      background:
+        linear-gradient(180deg, #fff7ce, #ffd36d 50%, #ffad27);
+      border-color: #e88300;
+    }
+
+    .side {
+      background:
+        linear-gradient(180deg, #fff9c9, #d6f6ff);
+      border-left: 0;
+    }
+
+    .card {
+      background:
+        linear-gradient(180deg, #ffffff, #f0fbff);
+      border: 2px solid #409de2;
+      border-radius: 8px;
+      box-shadow: inset 0 1px 0 #fff, 0 4px 0 rgba(0,102,180,.16);
+    }
+
+    .card h2 {
+      color: #064a92;
+      font-family: "Trebuchet MS", Tahoma, sans-serif;
+      font-size: .98rem;
+    }
+
+    .card p, .tiny { color: #455f78; }
+
+    .pip {
+      height: 10px;
+      background: #c1e9ff;
+      border: 1px solid #69addb;
+    }
+
+    .pip.used {
+      background: linear-gradient(180deg, #fff36c, #ff8c00);
+      box-shadow: 0 0 10px rgba(255,140,0,.45);
+    }
+
+    .guess, .retry-btn, .next-btn, .send {
+      border-radius: 7px;
+      border: 2px solid #fff;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.8), inset 0 -3px 0 rgba(0,0,0,.18), 0 3px 0 rgba(0,84,154,.26);
+      text-shadow: 0 1px 1px rgba(0,0,0,.25);
+    }
+
+    .guess {
+      color: #fff;
+      background: linear-gradient(180deg, #70dcff, #0782dc 50%, #005fb7);
+    }
+
+    .guess.human { background: linear-gradient(180deg, #74e979, #1da93a 50%, #0b7828); }
+    .guess.ai { background: linear-gradient(180deg, #b98cff, #7850d8 50%, #4e2fad); }
+    .guess:hover:not(:disabled), .send:hover:not(:disabled) { filter: brightness(1.06) saturate(1.08); }
+
+    .result {
+      border-radius: 8px;
+      border: 2px solid #fff;
+      box-shadow: 0 4px 0 rgba(0,84,154,.18);
+    }
+
+    .result.good {
+      color: #063a16;
+      background: linear-gradient(180deg, #e4ffd9, #91ee79);
+      border-color: #2cab40;
+    }
+
+    .result.bad {
+      color: #5d0021;
+      background: linear-gradient(180deg, #ffe1ee, #ff8ebb);
+      border-color: #d71d61;
+    }
+
+    .next-btn {
+      color: #fff;
+      background: linear-gradient(180deg, #ffcf58, #ff7a00 50%, #d34a00);
+    }
+
+    .composer {
+      background: linear-gradient(180deg, #c9f3ff, #64c6ff);
+      border-top: 3px solid #298cd3;
+    }
+
+    .composer input {
+      color: #112f4d;
+      background: #ffffff;
+      border: 2px solid #3b98da;
+      border-radius: 7px;
+      box-shadow: inset 0 2px 4px rgba(0,58,120,.14);
+    }
+
+    .composer input:focus {
+      border-color: #ff8b00;
+      box-shadow: 0 0 0 3px rgba(255,139,0,.22), inset 0 2px 4px rgba(0,58,120,.14);
+    }
+
+    .send {
+      color: #fff;
+      background: linear-gradient(180deg, #8cff6f, #15b941 50%, #08782a);
+    }
+
+    .meter {
+      height: 10px;
+      background: #bae9ff;
+      border: 1px solid #5aa8dc;
+    }
+
+    .meter span {
+      background: repeating-linear-gradient(45deg, #ff8b00 0 9px, #ffe45d 9px 18px);
+    }
+
+    .retry-btn {
+      color: #fff;
+      background: linear-gradient(180deg, #ff9eda, #de2d87 50%, #9b1455);
+    }
+
+    @media (max-width: 760px) {
+      body { padding: 0; }
+      .game { outline: 0; border-radius: 0; }
+      .side { border-top: 3px solid #2f94dc; }
+    }
   </style>
 </head>
 <body>
@@ -551,14 +811,14 @@
         </section>
 
         <div class="result" id="result"></div>
-        <button class="next-btn" id="nextBtn">Next suspect â†’</button>
+        <button class="next-btn" id="nextBtn">Next suspect ></button>
       </aside>
     </section>
 
     <form class="composer" id="composer">
       <input id="userInput" autocomplete="off" maxlength="220"
-             placeholder="Ask something revealingâ€¦" />
-      <button class="send" id="sendBtn" aria-label="Send">âžœ</button>
+             placeholder="Ask something revealing..." />
+      <button class="send" id="sendBtn" aria-label="Send">Go</button>
     </form>
 
   </main>
@@ -567,7 +827,7 @@
 (() => {
   "use strict";
 
-  const MODEL_ID = "Llama-3.2-1B-Instruct-q4f16_1-MLC";
+  const MODEL_ID = "Llama-3.2-3B-Instruct-q4f16_1-MLC";
   const WEBLLM_CDN = "https://esm.run/@mlc-ai/web-llm";
   const MODEL_TIMEOUT_MS = 180000;
   const GENERATION_TIMEOUT_MS = 30000;
@@ -575,9 +835,9 @@
   let webllmModule = null;
 
   /*
-    Browser LLM choice: Llama-3.2-1B-Instruct-q4f16_1-MLC via WebLLM.
-    This is much smarter and steadier than the previous 135M model while still
-    being one of WebLLM's low-resource prebuilt chat models. It runs entirely in
+    Browser LLM choice: Llama-3.2-3B-Instruct-q4f16_1-MLC via WebLLM.
+    This is smarter and steadier than the 1B model while still being one of
+    WebLLM's low-resource prebuilt chat models. It runs entirely in
     the browser through WebGPU, uses the browser cache after the first download,
     and falls back to the local phrase engine if loading or generation fails.
   */
@@ -768,7 +1028,7 @@
     "Someone direct, funny, and strong enough to call me out. That is my final answer.",
     "Personality first, but if I say only that, you're going to call it a boring answer.",
     "A woman who is confident, kind, and can actually hold a conversation. Specific enough for you, Todou?",
-    "Someone with presence. Not just looks â€” the kind of person who changes the energy in the room."
+    "Someone with presence. Not just looks - the kind of person who changes the energy in the room."
   ];
 
   const CASUAL_OPENERS = [
@@ -957,7 +1217,7 @@
 
     if (chance(0.16)) out = out.replace(/\.$/, "") + "...";
     if (chance(0.10)) out = out.replace(/\bI\b/g, "i");
-    if (chance(0.09)) out += pick([" lol", " tho", " I guess", " ðŸ’€"]);
+    if (chance(0.09)) out += pick([" lol", " tho", " I guess", " lmao"]);
     return cleanSpaces(out);
   }
 
@@ -982,7 +1242,7 @@
     }
 
     if (chance(0.08)) out = out.replace(/\bI\b/g, "i");
-    if (chance(0.07) && !/[!?â€¦]$/.test(out)) out += pick([" lol", " tho", " ðŸ’€"]);
+    if (chance(0.07) && !/[!?...]$/.test(out)) out += pick([" lol", " tho", " lmao"]);
     return cleanSpaces(out);
   }
 
@@ -1421,7 +1681,7 @@ ${sharedStyle}`;
 
       if (state.questions >= 3) {
         setComposerEnabled(false);
-        el.input.placeholder = "No questions left â€” make your guess.";
+        el.input.placeholder = "No questions left - make your guess.";
       } else {
         setComposerEnabled(true);
         el.input.focus();
@@ -1492,7 +1752,7 @@ ${sharedStyle}`;
     el.nextBtn.classList.remove("show");
     el.guessHuman.disabled = false;
     el.guessAI.disabled = false;
-    el.input.placeholder = "Ask something revealingâ€¦";
+    el.input.placeholder = "Ask something revealing...";
     setComposerEnabled(true);
     updatePips();
     initialGreeting();
