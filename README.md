@@ -32,6 +32,8 @@ Send that link to friends.
 
 The game is a static single-page app, so GitHub Pages can host it without a backend server.
 
+The "Human" suspect is now an AI that sincerely believes it is a normal human friend texting. The "AI" suspect knows it is roleplaying as human and is actively trying to blend in.
+
 The local AI engine still runs in each visitor's browser. On first load, the page imports WebLLM and downloads the Llama 3.2 1B q4f16 browser model. After that, the browser cache can make repeat visits faster.
 
 No API key or private backend is needed.
