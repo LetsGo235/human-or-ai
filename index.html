@@ -567,19 +567,19 @@
 (() => {
   "use strict";
 
-  const MODEL_ID = "HuggingFaceTB/SmolLM2-135M-Instruct";
-  const TRANSFORMERS_CDN = "https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.8.1";
-  const MODEL_TIMEOUT_MS = 60000;
-  const GENERATION_TIMEOUT_MS = 20000;
-  const MAX_NEW_TOKENS = 72;
-  let transformersPipeline = null;
+  const MODEL_ID = "Llama-3.2-1B-Instruct-q4f16_1-MLC";
+  const WEBLLM_CDN = "https://esm.run/@mlc-ai/web-llm";
+  const MODEL_TIMEOUT_MS = 180000;
+  const GENERATION_TIMEOUT_MS = 30000;
+  const MAX_NEW_TOKENS = 96;
+  let webllmModule = null;
 
   /*
-    Browser LLM choice: SmolLM2-135M-Instruct via Transformers.js/ONNX Runtime Web.
-    It is smaller than WebLLM's common Qwen/Llama chat bundles, Apache-2.0 licensed,
-    WebGPU-capable through Transformers.js, and coherent enough for short casual chat.
-    WebGPU is preferred; WASM is tried as a slower fallback before the game's local
-    phrase engine takes over silently during rounds.
+    Browser LLM choice: Llama-3.2-1B-Instruct-q4f16_1-MLC via WebLLM.
+    This is much smarter and steadier than the previous 135M model while still
+    being one of WebLLM's low-resource prebuilt chat models. It runs entirely in
+    the browser through WebGPU, uses the browser cache after the first download,
+    and falls back to the local phrase engine if loading or generation fails.
   */
 
   const DEFAULT_HUMAN_LINES = [
@@ -804,6 +804,7 @@
     corpus: [...DEFAULT_HUMAN_LINES],
     isGenerating: false,
     model: {
+      engine: null,
       generator: null,
       status: "idle",
       device: "none",
@@ -1177,58 +1178,54 @@
   async function initializeModel() {
     if (state.model.status === "loading" || state.model.status === "ready") return;
 
-    state.model = { generator: null, status: "loading", device: "none", error: "" };
-    setModelStatus("loading", "Downloading local chat model...", 8);
+    state.model = { engine: null, generator: null, status: "loading", device: "none", error: "" };
+    setModelStatus("loading", "Preparing smarter local chat model...", 6);
 
     try {
-      if (!transformersPipeline) {
-        const transformers = await withTimeout(import(TRANSFORMERS_CDN), MODEL_TIMEOUT_MS, "Transformers.js import");
-        transformersPipeline = transformers.pipeline;
+      if (!webllmModule) {
+        webllmModule = await withTimeout(import(WEBLLM_CDN), MODEL_TIMEOUT_MS, "WebLLM import");
       }
     } catch (error) {
-      console.warn("[Human or AI] Transformers.js could not load", error);
+      console.warn("[Human or AI] WebLLM could not load", error);
       state.model.error = error.message || String(error);
       state.model.status = "fallback";
       setModelStatus("fallback", "Ready using the built-in fallback. You can retry the local model if you want.", 100);
       return;
     }
 
-    const attempts = [];
-    if ("gpu" in navigator) {
-      attempts.push({ device: "webgpu", dtype: "q4", label: "WebGPU" });
-    } else {
-      setModelStatus("loading", "WebGPU is unavailable here; trying the slower local fallback runtime...", 12);
-    }
-    attempts.push({ device: "wasm", dtype: "q4", label: "WASM" });
-
-    for (const attempt of attempts) {
-      try {
-        setModelStatus("loading", `Loading local model with ${attempt.label}...`, attempt.device === "webgpu" ? 18 : 35);
-        const generator = await withTimeout(
-          transformersPipeline("text-generation", MODEL_ID, {
-            device: attempt.device,
-            dtype: attempt.dtype,
-            progress_callback: info => {
-              if (!info) return;
-              const raw = typeof info.progress === "number" ? info.progress : 0;
-              const pct = raw > 1 ? raw : raw * 100;
-              if (pct > 0) setModelStatus("loading", `Loading local model with ${attempt.label}... ${Math.round(pct)}%`, pct);
-            }
-          }),
-          MODEL_TIMEOUT_MS,
-          `${attempt.label} model load`
-        );
-        state.model = { generator, status: "ready", device: attempt.device, error: "" };
-        setModelStatus("ready", `Ready. Local model running with ${attempt.label}.`, 100);
-        return;
-      } catch (error) {
-        console.warn(`[Human or AI] ${attempt.label} model load failed`, error);
-        state.model.error = error.message || String(error);
-      }
+    if (!("gpu" in navigator)) {
+      console.warn("[Human or AI] WebGPU is unavailable; WebLLM cannot run this model.");
+      state.model.status = "fallback";
+      setModelStatus("fallback", "WebGPU is unavailable here. Ready using the built-in fallback.", 100);
+      return;
     }
 
-    state.model.status = "fallback";
-    setModelStatus("fallback", "Ready using the built-in fallback. You can retry the local model if you want.", 100);
+    try {
+      setModelStatus("loading", "Downloading smarter local model. First load can take a bit...", 10);
+      const engine = await withTimeout(
+        webllmModule.CreateMLCEngine(MODEL_ID, {
+          initProgressCallback: progress => {
+            const raw = typeof progress?.progress === "number" ? progress.progress : 0;
+            const pct = raw > 1 ? raw : raw * 100;
+            const text = progress?.text || "Loading smarter local model...";
+            setModelStatus("loading", `${text}${pct ? ` ${Math.round(pct)}%` : ""}`, pct || 12);
+          },
+          appConfig: {
+            ...webllmModule.prebuiltAppConfig,
+            cacheBackend: "cache"
+          }
+        }),
+        MODEL_TIMEOUT_MS,
+        "WebLLM model load"
+      );
+      state.model = { engine, generator: null, status: "ready", device: "webgpu", error: "" };
+      setModelStatus("ready", "Ready. Smarter local model running with WebGPU.", 100);
+    } catch (error) {
+      console.warn("[Human or AI] WebLLM model load failed", error);
+      state.model.error = error.message || String(error);
+      state.model.status = "fallback";
+      setModelStatus("fallback", "Smarter local model could not load. Ready using the built-in fallback.", 100);
+    }
   }
 
   function chooseAnswer() {
@@ -1242,70 +1239,66 @@
       .join("\n");
   }
 
-  function buildModelPrompt(prompt) {
+  function buildModelMessages(prompt) {
     const history = state.history.slice(-6)
-      .map(item => `${item.role === "you" ? "Player" : "Friend"}: ${item.text}`)
-      .join("\n");
+      .map(item => ({
+        role: item.role === "you" ? "user" : "assistant",
+        content: item.text
+      }));
     const examples = selectPromptExamples(prompt);
 
-    return `<|im_start|>system
-You are pretending to be the player's friend in a game of Human or AI.
+    return [
+      {
+        role: "system",
+        content: `You are pretending to be the player's friend in a game of Human or AI.
 Sound casual, playful, slightly sarcastic, sometimes blunt, and familiar with gaming and Jujutsu Kaisen.
+You understand games, builds, bosses, loadouts, tier lists, balance, Pokemon, Minecraft, Roblox, GameMaker, Soulslikes, FPS, fighting games, racing games, Gojo, Sukuna, Megumi, Mahoraga, domain expansions, cursed energy, Todou, and Yuji.
 Use words like bro, nah, honestly, and not gonna lie when they fit. Be concise, intelligent, and not polished like an assistant.
+Do not explain that you are an AI, a model, or in a game. Do not overdo slang. Do not write paragraphs.
 Occasionally reuse or paraphrase the style examples, but do not copy the same line every time.
 Occasionally make a believable small typo, but not constantly.
 Answer follow-ups using the current round history. Keep it to 1-3 short chat-message sentences.
 
 Style examples:
-${examples}
-<|im_end|>
-<|im_start|>user
-Current round:
-${history}
-
-Latest question: ${prompt}
-<|im_end|>
-<|im_start|>assistant
-`;
+${examples}`
+      },
+      ...history,
+      { role: "user", content: prompt }
+    ];
   }
 
-  function extractModelReply(output, prompt, modelPrompt) {
-    const raw = Array.isArray(output)
-      ? (output[0]?.generated_text ?? output[0]?.text ?? "")
-      : String(output || "");
-    let text = raw
-      .replace(modelPrompt, "")
-      .split("<|im_end|>")[0]
+  function cleanModelReply(raw) {
+    let text = String(raw || "")
       .replace(/^Friend:\s*/i, "")
       .replace(/^Assistant:\s*/i, "")
+      .replace(/^AI:\s*/i, "")
       .trim();
 
     if (!text || text.length < 3) return "";
     text = cleanSpaces(text);
-    return applyCasualNoise(text.split(/\n+/)[0].slice(0, 360), 0.12);
+    return applyCasualNoise(text.split(/\n+/).slice(0, 2).join(" ").slice(0, 360), 0.1);
   }
 
   async function generateAI(prompt) {
-    if (state.model.status !== "ready" || !state.model.generator) {
+    if (state.model.status !== "ready" || !state.model.engine) {
       console.warn("[Human or AI] Using fallback AI: model is not ready.");
       return generateFallbackAI(prompt);
     }
 
     try {
-      const modelPrompt = buildModelPrompt(prompt);
-      const output = await withTimeout(
-        state.model.generator(modelPrompt, {
-          max_new_tokens: MAX_NEW_TOKENS,
+      const completion = await withTimeout(
+        state.model.engine.chat.completions.create({
+          messages: buildModelMessages(prompt),
+          max_tokens: MAX_NEW_TOKENS,
           temperature: 0.82,
           top_p: 0.9,
-          repetition_penalty: 1.08,
-          do_sample: true,
-          return_full_text: false
+          frequency_penalty: 0.2,
+          presence_penalty: 0.1
         }),
         GENERATION_TIMEOUT_MS,
         "Local generation"
       );
-      return extractModelReply(output, prompt, modelPrompt) || generateFallbackAI(prompt);
+      return cleanModelReply(completion?.choices?.[0]?.message?.content) || generateFallbackAI(prompt);
     } catch (error) {
       console.warn("[Human or AI] Using fallback AI after generation failure", error);
       return generateFallbackAI(prompt);
